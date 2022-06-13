@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"ProjektBackend/api/v1/models"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -18,7 +21,7 @@ var _ = godotenv.Load(".env")
 var googleConfig = &oauth2.Config{
 	ClientID:     os.Getenv("GOOGLE_CLIENTID"),
 	ClientSecret: os.Getenv("GOOGLE_CLIENTSECRET"),
-	RedirectURL:  "http://localhost:8000/auth/google/callback",
+	RedirectURL:  "http://localhost:8000/api/v1/oauth/google/callback",
 	Scopes: []string{
 		"https://www.googleapis.com/auth/userinfo.email",
 		"https://www.googleapis.com/auth/userinfo.profile",
@@ -53,6 +56,36 @@ type GithubUserInfo struct {
 	Primary    bool   `json:"primary"`
 	Verified   bool   `json:"verified"`
 	Visibility string `json:"visibility"`
+}
+
+func GetOauthRouting(e *echo.Group) {
+	g := e.Group("/oauth")
+
+	g.GET("/google", func(c echo.Context) error {
+		url := GetLoginURL("google")
+		return c.JSON(http.StatusOK, map[string]string{"url": url})
+	})
+
+	g.GET("/github", func(c echo.Context) error {
+		url := GetLoginURL("github")
+		return c.JSON(http.StatusOK, map[string]string{"url": url})
+	})
+
+	g.GET("/google/callback", func(c echo.Context) error {
+		err := HandleCallback("google", c)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, map[string]string{"message": "login successful"})
+	})
+
+	g.GET("/github/callback", func(c echo.Context) error {
+		err := HandleCallback("github", c)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, map[string]string{"message": "login successful"})
+	})
 }
 
 func GetLoginURL(provider string) string {
@@ -93,7 +126,12 @@ func FetchGoogleUserInfo(token oauth2.Token) (*GoogleUserInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("Error closing body")
+		}
+	}(resp.Body)
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -108,34 +146,18 @@ func FetchGoogleUserInfo(token oauth2.Token) (*GoogleUserInfo, error) {
 	return &result, nil
 }
 
-func HandleGoogleCallback(c echo.Context) error {
-	token := GetTokenFromWeb("google", c.QueryParam("code"))
-	email, err := FetchGoogleUserInfo(*token)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Failed to fetch user info"})
-	}
-
-	found := FindUser(email.Email, "google")
-	if found == false {
-		AddUser(email.Email, "google")
-	}
-	u := GetUser(email.Email, "google")
-
-	err = c.Redirect(http.StatusFound, "http://localhost:3000/login/google/"+u.GoToken+"&"+u.Email)
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{"message": "Logged in successfully"})
-}
-
 func FetchGithubUserInfo(token oauth2.Token) (*GithubUserInfo, error) {
 	client := githubConfig.Client(context.Background(), &token)
 	resp, err := client.Get("https://api.github.com/user/emails")
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("Error closing body")
+		}
+	}(resp.Body)
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -156,18 +178,36 @@ func FetchGithubUserInfo(token oauth2.Token) (*GithubUserInfo, error) {
 	return nil, nil
 }
 
-func HandleGithubCallback(c echo.Context) error {
-	token := GetTokenFromWeb("github", c.QueryParam("code"))
-	email, err := FetchGithubUserInfo(*token)
+func HandleCallback(provider string, c echo.Context) error {
+	var token *oauth2.Token
+	var err error
+	var u models.User
+
+	if provider == "google" {
+		var email *GoogleUserInfo
+		token = GetTokenFromWeb("google", c.QueryParam("code"))
+		email, err = FetchGoogleUserInfo(*token)
+		found := FindUser(email.Email, "google")
+		if found == false {
+			AddUser(email.Email, "google")
+		}
+		u = GetUser(email.Email, "google")
+	} else if provider == "github" {
+		var email *GithubUserInfo
+		token = GetTokenFromWeb("github", c.QueryParam("code"))
+		email, err = FetchGithubUserInfo(*token)
+		found := FindUser(email.Email, "github")
+		if found == false {
+			AddUser(email.Email, "github")
+		}
+		u = GetUser(email.Email, "github")
+	} else {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "invalid oauth provider"})
+	}
+
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Failed to fetch user info"})
 	}
-
-	found := FindUser(email.Email, "github")
-	if found == false {
-		AddUser(email.Email, "github")
-	}
-	u := GetUser(email.Email, "github")
 
 	err = c.Redirect(http.StatusFound, "http://localhost:3000/login/github/"+u.GoToken+"&"+u.Email)
 	if err != nil {
