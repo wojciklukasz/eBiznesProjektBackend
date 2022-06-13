@@ -23,6 +23,11 @@ func main() {
 
 	g := e.Group("/api/v1")
 	controllers.GetOauthRouting(g)
+	controllers.GetCategoriesRouting(g)
+	controllers.GetManufacturersRouting(g)
+	controllers.GetProductsRouting(g)
+	controllers.GetUsersRouting(g)
+	controllers.GetOrdersRouting(g)
 
 	e.Logger.Fatal(e.Start(":8000"))
 }
