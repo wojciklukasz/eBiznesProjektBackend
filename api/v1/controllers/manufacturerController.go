@@ -33,7 +33,7 @@ func GetManufacturer(c echo.Context) error {
 
 	result := database.Database.Find(&manufacturer, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, manufacturer)
@@ -60,7 +60,7 @@ func UpdateManufacturer(c echo.Context) error {
 	var manufacturer models.Manufacturer
 	result := database.Database.Find(&manufacturer, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	values := new(models.Manufacturer)
@@ -82,7 +82,7 @@ func DeleteManufacturer(c echo.Context) error {
 
 	result := database.Database.Delete(&manufacturer, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "item deleted"})

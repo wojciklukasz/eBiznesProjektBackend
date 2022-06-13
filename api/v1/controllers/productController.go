@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+var itemNotFoundMessage = "Item not found"
+
 func GetProductsRouting(e *echo.Group) {
 	g := e.Group("/product")
 	g.GET("", GetProducts)
@@ -33,7 +35,7 @@ func GetProduct(c echo.Context) error {
 
 	result := database.Database.Find(&product, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, product)
@@ -60,7 +62,7 @@ func UpdateProduct(c echo.Context) error {
 	var product models.Product
 	result := database.Database.Find(&product, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	values := new(models.Product)
@@ -85,7 +87,7 @@ func DeleteProduct(c echo.Context) error {
 
 	result := database.Database.Delete(&product, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "item deleted"})

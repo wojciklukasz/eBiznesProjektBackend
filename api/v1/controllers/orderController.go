@@ -33,7 +33,7 @@ func GetOrder(c echo.Context) error {
 
 	result := database.Database.Find(&order, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, order)
@@ -60,7 +60,7 @@ func UpdateOrder(c echo.Context) error {
 	var order models.Order
 	result := database.Database.Find(&order, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	values := new(models.Order)
@@ -83,7 +83,7 @@ func DeleteOrder(c echo.Context) error {
 
 	result := database.Database.Delete(&order, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "item deleted"})

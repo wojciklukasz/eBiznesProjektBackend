@@ -33,7 +33,7 @@ func GetCategory(c echo.Context) error {
 
 	result := database.Database.Find(&category, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, category)
@@ -60,7 +60,7 @@ func UpdateCategory(c echo.Context) error {
 	var category models.Category
 	result := database.Database.Find(&category, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	values := new(models.Category)
@@ -82,7 +82,7 @@ func DeleteCategory(c echo.Context) error {
 
 	result := database.Database.Delete(&category, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "item deleted"})

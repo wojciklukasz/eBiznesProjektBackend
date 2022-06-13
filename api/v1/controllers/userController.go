@@ -43,7 +43,7 @@ func DeleteUser(c echo.Context) error {
 
 	result := database.Database.Delete(&user, id)
 	if result.Error != nil {
-		return c.String(http.StatusNotFound, "Item not found")
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "item deleted"})
