@@ -31,8 +31,8 @@ var googleConfig = &oauth2.Config{
 }
 
 var githubConfig = &oauth2.Config{
-	ClientID:     os.Getenv("GITHUB_CLIENTID"),
-	ClientSecret: os.Getenv("GITHUB_CLIENTSECRET"),
+	ClientID:     os.Getenv("GITH_CLIENTID"),
+	ClientSecret: os.Getenv("GITH_CLIENTSECRET"),
 	Scopes: []string{
 		"user:email",
 	},

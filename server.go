@@ -17,9 +17,10 @@ func main() {
 	}
 
 	e := echo.New()
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000"},
-	}))
+	//e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	//	AllowOrigins: []string{"http://localhost:3000", "https://ebiznesprojekt.azurewebsites.net:3000"},
+	//}))
+	e.Use(middleware.CORS())
 
 	g := e.Group("/api/v1")
 	controllers.GetOauthRouting(g)
