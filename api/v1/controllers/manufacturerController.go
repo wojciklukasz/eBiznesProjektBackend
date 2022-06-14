@@ -5,12 +5,14 @@ import (
 	"ProjektBackend/api/v1/models"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 func GetManufacturersRouting(e *echo.Group) {
 	g := e.Group("/manufacturer")
-	g.GET("", GetManufacturers)
+	g.GET("/:id/all", GetItemsFromManufacturer)
 	g.GET("/:id", GetManufacturer)
+	g.GET("", GetManufacturers)
 	g.POST("", SaveManufacturer)
 	g.PUT("/:id", UpdateManufacturer)
 	g.DELETE("/:id", DeleteManufacturer)
@@ -37,6 +39,20 @@ func GetManufacturer(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, manufacturer)
+}
+
+func GetItemsFromManufacturer(c echo.Context) error {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 16)
+	if err != nil {
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
+	}
+
+	products, err := GetProductByManufacturer(id)
+	if products == nil {
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
+	}
+
+	return c.JSON(http.StatusOK, products)
 }
 
 func SaveManufacturer(c echo.Context) error {

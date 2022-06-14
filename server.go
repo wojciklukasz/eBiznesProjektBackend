@@ -13,6 +13,7 @@ func main() {
 	database.Connect()
 
 	// TO DO: REMOVE WHEN DEPLOYING
+	// CHANGE MAXIMUM STARTUP TIME
 	var err = godotenv.Load(".env")
 	if err != nil {
 		panic("Error loading .env file!")

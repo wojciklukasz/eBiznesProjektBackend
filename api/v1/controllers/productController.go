@@ -3,7 +3,6 @@ package controllers
 import (
 	"ProjektBackend/api/v1/database"
 	"ProjektBackend/api/v1/models"
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -12,15 +11,14 @@ var itemNotFoundMessage = "Item not found"
 
 func GetProductsRouting(e *echo.Group) {
 	g := e.Group("/product")
-	g.GET("", GetProducts)
 	g.GET("/:id", GetProduct)
+	g.GET("", GetProducts)
 	g.POST("", SaveProduct)
 	g.PUT("/:id", UpdateProduct)
 	g.DELETE("/:id", DeleteProduct)
 }
 
 func GetProducts(c echo.Context) error {
-	fmt.Println("\n\nADRES:    " + c.Request().Host + "\n\n")
 	var products []models.Product
 
 	result := database.Database.Find(&products)
@@ -41,6 +39,28 @@ func GetProduct(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, product)
+}
+
+func GetProductByCategory(category int64) ([]models.Product, error) {
+	var products []models.Product
+
+	result := database.Database.Where("category_id = ?", category).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return products, nil
+}
+
+func GetProductByManufacturer(category int64) ([]models.Product, error) {
+	var products []models.Product
+
+	result := database.Database.Where("manufacturer_id = ?", category).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return products, nil
 }
 
 func SaveProduct(c echo.Context) error {
