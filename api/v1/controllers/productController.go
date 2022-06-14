@@ -3,7 +3,6 @@ package controllers
 import (
 	"ProjektBackend/api/v1/database"
 	"ProjektBackend/api/v1/models"
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -20,7 +19,6 @@ func GetProductsRouting(e *echo.Group) {
 }
 
 func GetProducts(c echo.Context) error {
-	fmt.Println("\n\nADRES:    " + c.Request().Host + "\n\n")
 	var products []models.Product
 
 	result := database.Database.Find(&products)
