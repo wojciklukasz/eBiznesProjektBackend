@@ -7,4 +7,4 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 3051
