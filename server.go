@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"net/http"
 )
 
 func main() {
@@ -21,6 +22,10 @@ func main() {
 	//	AllowOrigins: []string{"http://localhost:3000", "https://ebiznesprojekt.azurewebsites.net:3000"},
 	//}))
 	e.Use(middleware.CORS())
+
+	e.GET("/", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"hello": "world"})
+	})
 
 	g := e.Group("/api/v1")
 	controllers.GetOauthRouting(g)
