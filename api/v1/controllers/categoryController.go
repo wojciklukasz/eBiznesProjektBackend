@@ -5,12 +5,14 @@ import (
 	"ProjektBackend/api/v1/models"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 func GetCategoriesRouting(e *echo.Group) {
 	g := e.Group("/category")
-	g.GET("", GetCategories)
+	g.GET("/:id/all", GetItemsFromCategory)
 	g.GET("/:id", GetCategory)
+	g.GET("", GetCategories)
 	g.POST("", SaveCategory)
 	g.PUT("/:id", UpdateCategory)
 	g.DELETE("/:id", DeleteCategory)
@@ -37,6 +39,20 @@ func GetCategory(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, category)
+}
+
+func GetItemsFromCategory(c echo.Context) error {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 16)
+	if err != nil {
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
+	}
+
+	products, err := GetProductByCategory(id)
+	if products == nil {
+		return c.String(http.StatusNotFound, itemNotFoundMessage)
+	}
+
+	return c.JSON(http.StatusOK, products)
 }
 
 func SaveCategory(c echo.Context) error {

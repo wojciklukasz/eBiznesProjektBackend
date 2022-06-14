@@ -11,8 +11,8 @@ var itemNotFoundMessage = "Item not found"
 
 func GetProductsRouting(e *echo.Group) {
 	g := e.Group("/product")
-	g.GET("", GetProducts)
 	g.GET("/:id", GetProduct)
+	g.GET("", GetProducts)
 	g.POST("", SaveProduct)
 	g.PUT("/:id", UpdateProduct)
 	g.DELETE("/:id", DeleteProduct)
@@ -39,6 +39,28 @@ func GetProduct(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, product)
+}
+
+func GetProductByCategory(category int64) ([]models.Product, error) {
+	var products []models.Product
+
+	result := database.Database.Where("category_id = ?", category).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return products, nil
+}
+
+func GetProductByManufacturer(category int64) ([]models.Product, error) {
+	var products []models.Product
+
+	result := database.Database.Where("manufacturer_id = ?", category).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return products, nil
 }
 
 func SaveProduct(c echo.Context) error {
