@@ -3,7 +3,6 @@ package main
 import (
 	"ProjektBackend/api/v1/controllers"
 	"ProjektBackend/api/v1/database"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
@@ -12,10 +11,10 @@ import (
 func main() {
 	database.Connect()
 
-	var err = godotenv.Load(".env")
-	if err != nil {
-		panic("Error loading .env file!")
-	}
+	//var err = godotenv.Load(".env")
+	//if err != nil {
+	//	panic("Error loading .env file!")
+	//}
 
 	e := echo.New()
 	//e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
