@@ -3,8 +3,10 @@ package controllers
 import (
 	"ProjektBackend/api/v1/database"
 	"ProjektBackend/api/v1/models"
+	"encoding/json"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 func GetOrdersRouting(e *echo.Group) {
@@ -42,10 +44,30 @@ func GetOrder(c echo.Context) error {
 func SaveOrder(c echo.Context) error {
 	order := new(models.Order)
 
-	err := c.Bind(order)
+	data := make(map[string]interface{})
+	err := json.NewDecoder(c.Request().Body).Decode(&data)
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid body "+err.Error())
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid body"})
 	}
+
+	itemOrders := data["items"].(map[string]interface{})
+	var items []models.ItemOrder
+	for product, count := range itemOrders {
+		id, _ := strconv.ParseInt(product, 10, 32)
+		count, _ := strconv.ParseInt(count.(string), 10, 32)
+		result := SaveItemOrder(int(id), int(count))
+		items = append(items, result)
+	}
+
+	order.Name = data["name"].(string)
+	order.Surname = data["surname"].(string)
+	order.Email = data["email"].(string)
+	order.Road = data["road"].(string)
+	order.Nr = data["nr"].(string)
+	order.Code = data["code"].(string)
+	order.City = data["city"].(string)
+	order.Phone = data["phone"].(string)
+	order.Items = items
 
 	result := database.Database.Create(order)
 	if result.Error != nil {
@@ -69,8 +91,6 @@ func UpdateOrder(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid body "+err.Error())
 	}
 
-	order.Date = values.Date
-	order.CustomerID = values.CustomerID
 	order.Total = values.Total
 	database.Database.Save(&order)
 
