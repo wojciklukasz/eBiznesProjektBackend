@@ -54,8 +54,6 @@ func FindUserWithToken(c echo.Context) error {
 	token := c.Param("token")
 	var user models.User
 
-	AddUser("a@b.com", "custom")
-
 	database.Database.Find(&user, "go_token = ?", token)
 	if user.Email == "" {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "invalid token"})

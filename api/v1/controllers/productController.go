@@ -41,6 +41,17 @@ func GetProduct(c echo.Context) error {
 	return c.JSON(http.StatusOK, product)
 }
 
+func GetProductByID(id int) (models.Product, error) {
+	var product models.Product
+
+	result := database.Database.First(&product, id)
+	if result.Error != nil {
+		return product, result.Error
+	}
+
+	return product, nil
+}
+
 func GetProductByCategory(category int64) ([]models.Product, error) {
 	var products []models.Product
 
