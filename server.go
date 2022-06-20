@@ -36,6 +36,7 @@ func main() {
 	controllers.GetProductsRouting(g)
 	controllers.GetUsersRouting(g)
 	controllers.GetOrdersRouting(g)
+	controllers.GetPaymentRouting(g)
 
 	e.Logger.Fatal(e.Start(":3051"))
 }
