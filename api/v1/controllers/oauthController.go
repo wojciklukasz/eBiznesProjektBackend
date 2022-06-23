@@ -18,7 +18,7 @@ import (
 var googleConfig = &oauth2.Config{
 	ClientID:     os.Getenv("GOOGLE_CLIENTID"),
 	ClientSecret: os.Getenv("GOOGLE_CLIENTSECRET"),
-	RedirectURL:  "http://localhost:8000/api/v1/oauth/google/callback",
+	RedirectURL:  "https://ebiznesprojektbackend.azurewebsites.net/api/v1/oauth/google/callback",
 	Scopes: []string{
 		"https://www.googleapis.com/auth/userinfo.email",
 		"https://www.googleapis.com/auth/userinfo.profile",
