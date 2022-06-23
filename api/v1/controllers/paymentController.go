@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/paymentintent"
@@ -10,9 +9,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-// TO DO: REMOVE WHEN DEPLOYING
-var _ = godotenv.Load(".env")
 
 func GetPaymentRouting(e *echo.Group) {
 	g := e.Group("/payment")

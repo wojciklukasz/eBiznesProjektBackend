@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -15,9 +14,6 @@ import (
 	"net/http"
 	"os"
 )
-
-// TO DO: REMOVE WHEN DEPLOYING
-var _ = godotenv.Load(".env")
 
 var googleConfig = &oauth2.Config{
 	ClientID:     os.Getenv("GOOGLE_CLIENTID"),
