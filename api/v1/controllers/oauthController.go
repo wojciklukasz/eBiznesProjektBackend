@@ -206,9 +206,16 @@ func HandleCallback(provider string, c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Failed to fetch user info"})
 	}
 
-	err = c.Redirect(http.StatusFound, "http://localhost:3000/login/github/"+u.GoToken+"&"+u.Email)
-	if err != nil {
-		return err
+	if provider == "google" {
+		err = c.Redirect(http.StatusFound, "https://ebiznesprojekt.azurewebsites.net/login/google/"+u.GoToken+"&"+u.Email)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = c.Redirect(http.StatusFound, "https://ebiznesprojekt.azurewebsites.net/login/github/"+u.GoToken+"&"+u.Email)
+		if err != nil {
+			return err
+		}
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "Logged in successfully"})
