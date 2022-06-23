@@ -15,8 +15,6 @@ import (
 	"os"
 )
 
-// var _ = godotenv.Load(".env")
-
 var googleConfig = &oauth2.Config{
 	ClientID:     os.Getenv("GOOGLE_CLIENTID"),
 	ClientSecret: os.Getenv("GOOGLE_CLIENTSECRET"),

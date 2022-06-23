@@ -11,11 +11,6 @@ import (
 func main() {
 	database.Connect()
 
-	//var err = godotenv.Load(".env")
-	//if err != nil {
-	//	panic("Error loading .env file!")
-	//}
-
 	e := echo.New()
 	//e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 	//	AllowOrigins: []string{"http://localhost:3000", "https://ebiznesprojekt.azurewebsites.net:3000"},
@@ -33,6 +28,7 @@ func main() {
 	controllers.GetProductsRouting(g)
 	controllers.GetUsersRouting(g)
 	controllers.GetOrdersRouting(g)
+	controllers.GetPaymentRouting(g)
 
 	e.Logger.Fatal(e.Start(":3051"))
 }

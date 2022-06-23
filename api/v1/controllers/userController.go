@@ -11,6 +11,7 @@ import (
 func GetUsersRouting(e *echo.Group) {
 	g := e.Group("/user")
 	g.DELETE("/:id", DeleteUser)
+	g.GET("/validate/:token", FindUserWithToken)
 }
 
 func FindUser(email string, service string) bool {
@@ -47,4 +48,16 @@ func DeleteUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "item deleted"})
+}
+
+func FindUserWithToken(c echo.Context) error {
+	token := c.Param("token")
+	var user models.User
+
+	database.Database.Find(&user, "go_token = ?", token)
+	if user.Email == "" {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "invalid token"})
+	} else {
+		return c.JSON(http.StatusOK, map[string]string{"email": user.Email})
+	}
 }
